@@ -1,0 +1,37 @@
+{
+  "name": "statuscake",
+  "version": "0.0.1",
+  "description": "StatusCake API client library and CLI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "dev": "npm install && npm run test -- -w"
+  },
+  "directories": {
+    "bin": "./bin"
+  },
+  "bin": {
+    "sccli": "./bin/sccli"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:pm5/node-statuscake.git"
+  },
+  "keywords": [
+    "statuscake",
+    "cli"
+  ],
+  "author": "Pomin Wu <pomin5@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pm5/node-statuscake/issues"
+  },
+  "homepage": "https://github.com/pm5/node-statuscake",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "mocha": "^2.1.0"
+  },
+  "dependencies": {
+    "request": "^2.53.0"
+  }
+}

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+':' //; exec "`command -v node || command -v nodejs`" "$0" "$@"
+
+var conf = require(process.env["HOME"] + "/.statuscake.json");
+var api = require("statuscake")(conf);
+
+if (process.argv[2] === "tests") {
+  api.tests(function (err, data) {
+    process.stdout.write(JSON.stringify(data));
+  });
+}
