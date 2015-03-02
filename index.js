@@ -1,4 +1,4 @@
 "use strict"
 
-module.exports = require("./app");
-exports.api = require("./api");
+var app = module.exports = require("./app");
+app.api = require("./api");
