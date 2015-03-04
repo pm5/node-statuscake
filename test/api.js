@@ -14,12 +14,22 @@ describe("StatusCake API", function () {
     });
     it("could authenticate user", function (done) {
       statuscake.authenticate(conf, function (err, data) {
+        if (err) { return done(err); }
         expect(data.Details.Username).equal(conf.Username);
         expect(data.ErrNo).to.be.undefined;
-        done(err);
+        done();
       });
     });
-    it("could save authentication info")
+    it("could save authentication info", function (done) {
+      statuscake.set("Username", conf.Username);
+      statuscake.set("API", conf.API);
+      statuscake.authenticate(function (err, data) {
+        if (err) { return done(err); }
+        expect(data.Details.Username).to.equal(conf.Username);
+        expect(data.ErrNo).to.be.undefined;
+        done();
+      });
+    });
   });
 
   describe("Tests", function () {

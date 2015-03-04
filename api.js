@@ -2,7 +2,8 @@ var api = module.exports = {};
 
 var request = require("request");
 
-var API, Username;
+var auth = {};
+
 var apiOpt = {
   url: "http://www.statuscake.com",
   port: 80
@@ -13,13 +14,7 @@ function reqOpt() {
   Object.keys(apiOpt).forEach(function (key) {
     opts[key] = apiOpt[key];
   });
-  opts.headers = {};
-  if (API) {
-    opts.headers.API = API;
-  }
-  if (Username) {
-    opts.headers.Username = Username;
-  }
+  opts.headers = auth;
   return opts;
 };
 
@@ -27,10 +22,9 @@ function apiPath(name) {
   return "/API" + name.replace(/^[sg]et/, "").replace(/([A-Z])/g, "_$1").split(/_/).join("/") + "/";
 }
 
-api.get = function (name, params, opts, done) {
-  API = opts.API;
-  Username = opts.Username;
-  opts = reqOpt();
+api.get = function (name, params, conf, done) {
+  var opts = reqOpt();
+  if (conf) { opts.headers = conf; }
   opts["method"] = "GET";
   opts["url"] += apiPath(name);
   if (params) {
@@ -47,12 +41,19 @@ api.get = function (name, params, opts, done) {
 };
 
 api.clear = function () {
-  API = undefined;
-  Username = undefined;
+  auth = {};
 };
 
-api.authenticate = function (conf, done) {
-  return api.get("getAuth", null, conf, done);
+api.set = function (name, value) {
+  if (name === "API") { auth.API = value; }
+  if (name === "Username") { auth.Username = value; }
+}
+
+api.authenticate = function () {
+  if (arguments.length === 1) {
+    return api.get("getAuth", null, auth, arguments[0]);
+  }
+  return api.get("getAuth", null, arguments[0], arguments[1]);
 };
 
 api.getTests = function (conf, done) {
