@@ -2,8 +2,8 @@ var api = require("./api");
 
 var app = module.exports = function (options) {
   var opts = options;
-  apiKey = options["apiKey"];
-  username = options["username"];
+  API = options.API;
+  Username = options.Username;
   return {
     set: function (key, val) {
 
@@ -11,9 +11,9 @@ var app = module.exports = function (options) {
     tests: function () {
       var done = arguments[arguments.length - 1];
       if (arguments.length === 2 && typeof arguments[0] === 'number') {
-        return api.get("getTestsDetails", { TestID: arguments[0] }, { apiKey: apiKey, username: username }, done);
+        return api.get("getTestsDetails", { TestID: arguments[0] }, { API: API, Username: Username }, done);
       }
-      return api.get("getTests", null, { apiKey: apiKey, username: username }, done);
+      return api.get("getTests", null, { API: API, Username: Username }, done);
     }
   };
 };

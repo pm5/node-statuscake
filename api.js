@@ -2,7 +2,7 @@ var api = module.exports = {};
 
 var request = require("request");
 
-var apiKey, username;
+var API, Username;
 var apiOpt = {
   url: "http://www.statuscake.com",
   port: 80
@@ -13,10 +13,13 @@ function reqOpt() {
   Object.keys(apiOpt).forEach(function (key) {
     opts[key] = apiOpt[key];
   });
-  opts["headers"] = {
-    "API": apiKey,
-    "Username": username
-  };
+  opts.headers = {};
+  if (API) {
+    opts.headers.API = API;
+  }
+  if (Username) {
+    opts.headers.Username = Username;
+  }
   return opts;
 };
 
@@ -25,8 +28,8 @@ function apiPath(name) {
 }
 
 api.get = function (name, params, opts, done) {
-  apiKey = opts["apiKey"];
-  username = opts["username"];
+  API = opts.API;
+  Username = opts.Username;
   opts = reqOpt();
   opts["method"] = "GET";
   opts["url"] += apiPath(name);
@@ -35,7 +38,6 @@ api.get = function (name, params, opts, done) {
       return key + "=" + params[key]
     }).join("&");
   }
-  //console.log(opts["url"]);
   request(opts, function (err, res, body) {
     if (err) {
       return done(err, null);
