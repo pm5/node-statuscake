@@ -1,6 +1,6 @@
 var api = require("./api");
 
-module.exports = function (options) {
+var app = module.exports = function (options) {
   var opts = options;
   apiKey = options["apiKey"];
   username = options["username"];

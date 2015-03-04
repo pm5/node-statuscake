@@ -7,11 +7,10 @@ describe("StatusCake App", function () {
   var app;
   this.timeout(10000);
   beforeEach(function () {
-    app = statuscake(conf);
+    app = statuscake.app(conf);
   });
 
   describe("Tests", function () {
-
     it("should get all tests", function (done) {
       app.tests(function (err, data) {
         expect(err).is.null;
@@ -29,7 +28,6 @@ describe("StatusCake App", function () {
         done();
       });
     });
-
   });
 
 });

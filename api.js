@@ -1,4 +1,4 @@
-module.exports = api = {};
+var api = module.exports = {};
 
 var request = require("request");
 
@@ -42,5 +42,12 @@ api.get = function (name, params, opts, done) {
     }
     return done(null, JSON.parse(body));
   });
-}
+};
 
+api.getTests = function (conf, done) {
+  return api.get("getTests", null, conf, done);
+};
+
+api.getTestsDetails = function (id, conf, done) {
+  return api.get("getTestsDetails", { TestID: id }, conf, done);
+};

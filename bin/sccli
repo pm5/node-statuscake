@@ -4,7 +4,7 @@
 
 var conf = require(process.env["HOME"] + "/.statuscake.json");
 var statuscake = require("statuscake");
-var app = statuscake(conf);
+var app = statuscake.app(conf);
 
 if (process.argv[2] === "tests") {
   app.tests(function (err, data) {
