@@ -46,6 +46,15 @@ api.get = function (name, params, opts, done) {
   });
 };
 
+api.clear = function () {
+  API = undefined;
+  Username = undefined;
+};
+
+api.authenticate = function (conf, done) {
+  return api.get("getAuth", null, conf, done);
+};
+
 api.getTests = function (conf, done) {
   return api.get("getTests", null, conf, done);
 };

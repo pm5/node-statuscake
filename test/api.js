@@ -9,23 +9,24 @@ describe("StatusCake API", function () {
   this.timeout(10000);
 
   describe("Authentication", function () {
-    //afterEach(function () {
-      //statuscake.clear();
-    //});
-    //it("could authenticate user", function (done) {
-      //statuscake.authenticate(conf, function (err, data) {
-        //expect(data.Details.Username).equal(conf.Username);
-        //done(err);
-      //});
-    //});
-    it("could configure authentication info")
+    afterEach(function () {
+      statuscake.clear();
+    });
+    it("could authenticate user", function (done) {
+      statuscake.authenticate(conf, function (err, data) {
+        expect(data.Details.Username).equal(conf.Username);
+        expect(data.ErrNo).to.be.undefined;
+        done(err);
+      });
+    });
+    it("could save authentication info")
   });
 
   describe("Tests", function () {
     it("could get all test results", function (done) {
       statuscake.getTests(conf, function (err, data) {
-        expect(data.length).is.a("number");
-        expect(data[0].TestID).is.a("number");
+        expect(data.length).to.be.a("number");
+        expect(data[0].TestID).to.be.a("number");
         done(err);
       });
     });
