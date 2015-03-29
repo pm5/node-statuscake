@@ -3,7 +3,7 @@ var expect = require("chai").expect;
 var conf = require("./conf");
 var statuscake = require("..");
 
-describe("StatusCake App", function () {
+describe.skip("StatusCake App", function () {
   var app;
   this.timeout(10000);
   beforeEach(function () {
