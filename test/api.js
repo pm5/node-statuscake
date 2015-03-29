@@ -1,19 +1,19 @@
 
 var expect = require("chai").expect;
 var conf = require("./conf");
-var statuscake = require("..");
+var sc = require("..");
 
-var TestID = 334980;
+var TestID = 375727;
 
 describe("StatusCake API", function () {
   this.timeout(10000);
 
   describe("Authentication", function () {
     afterEach(function () {
-      statuscake.clear();
+      sc.clear();
     });
     it("could authenticate user", function (done) {
-      statuscake.authenticate(conf, function (err, data) {
+      sc.authenticate(conf, function (err, data) {
         if (err) { return done(err); }
         expect(data.Details.Username).equal(conf.Username);
         expect(data.ErrNo).to.be.undefined;
@@ -21,9 +21,9 @@ describe("StatusCake API", function () {
       });
     });
     it("could save authentication info", function (done) {
-      statuscake.set("Username", conf.Username);
-      statuscake.set("API", conf.API);
-      statuscake.authenticate(function (err, data) {
+      sc.set("Username", conf.Username);
+      sc.set("API", conf.API);
+      sc.authenticate(function (err, data) {
         if (err) { return done(err); }
         expect(data.Details.Username).to.equal(conf.Username);
         expect(data.ErrNo).to.be.undefined;
@@ -33,22 +33,40 @@ describe("StatusCake API", function () {
   });
 
   describe("Tests", function () {
-    it("could get all test results", function (done) {
-      statuscake.getTests(conf, function (err, data) {
+    it("can get all tests", function (done) {
+      sc.tests(conf, function (err, data) {
         expect(data.length).to.be.a("number");
         expect(data[0].TestID).to.be.a("number");
         done(err);
       });
     });
 
-    it("could get details about a test", function (done) {
-      statuscake.getTestsDetails(TestID, conf, function (err, data) {
+    it("can get detailed test data", function (done) {
+      sc.testDetails(TestID, conf, function (err, data) {
         expect(data.TestID).equal(TestID);
         expect(data.Method).equal("GET");
         done(err);
       });
     });
 
-    it("could update a test");
+    it("can insert and delete a test", function () {
+      var data = {
+        WebsiteName: "node-statuscake API test site",
+        WebsiteURL: "https://status.github.com/",
+        CheckRate: 300,
+        TestType: "HTTP",
+      };
+      sc.testUpdate(data, function (err, output) {
+        expect(err).to.be.null;
+        expect(output.Success).to.be.true;
+        expect(output.InsertID).to.be.okay;
+        var updatedID = output.InsertID;
+        sc.testDelete(updatedID, function (err, output) {
+          expect(output.Success).to.be.true;
+          expect(output.TestID).equal(updatedID);
+          done(err);
+        });
+      });
+    });
   });
 });
