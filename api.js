@@ -1,22 +1,36 @@
 "use strict";
 
 var sa = require("superagent");
-var API_URL = "http://www.statuscake.com";
+var API_URL = "http://www.statuscake.com/API";
 var AUTH ={};
 
 var api = module.exports = {};
 
-api.apiPath = function (name) {
-  var seg = name[0].toUpperCase().concat(name.substring(1)).replace(/([A-Z])/g, "_$1").split(/_/);
-  if (seg.length > 2) {
-    seg[1] = seg[1] + "s";
+api.get = function () {
+  var path = arguments[0];
+  var param = {};
+  var done = arguments[arguments.length - 1];
+  if (arguments.length === 3) {
+    param = arguments[1];
   }
-  return "/API" + seg.join("/") + "/";
-}
-
-api.get = function (name, done) {
-  sa.get(API_URL + api.apiPath(name))
+  sa.get(API_URL + path)
     .set(AUTH)
+    .query(param)
+    .end(function (err, res) {
+      done(err, res.body);
+    });
+};
+
+api.delete = function () {
+  var path = arguments[0];
+  var param = {};
+  var done = arguments[arguments.length - 1];
+  if (arguments.length === 3) {
+    param = arguments[1];
+  }
+  sa.delete(API_URL + path)
+    .set(AUTH)
+    .query(param)
     .end(function (err, res) {
       done(err, res.body);
     });
@@ -48,13 +62,17 @@ api.authenticate = function () {
     if (conf.API) api.key(conf.API);
     if (conf.Username) api.username(conf.Username);
   }
-  return api.get("auth", done);
+  return api.get("/Auth", done);
 };
 
-api.getTests = function (conf, done) {
-  return api.get("getTests", null, conf, done);
+api.tests = function (done) {
+  return api.get("/Tests", done);
 };
 
-api.getTestsDetails = function (id, conf, done) {
-  return api.get("getTestsDetails", { TestID: id }, conf, done);
+api.test = function (id, done) {
+  return api.get("/Tests/Details", { TestID: id }, done);
+};
+
+api.testDelete = function (id, done) {
+  return api.delete("/Tests/Details", { TestID: id }, done);
 };
