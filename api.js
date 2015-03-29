@@ -1,59 +1,54 @@
+"use strict";
+
+var sa = require("superagent");
+var API_URL = "http://www.statuscake.com";
+var AUTH ={};
+
 var api = module.exports = {};
 
-var request = require("request");
-
-var auth = {};
-
-var apiOpt = {
-  url: "http://www.statuscake.com",
-  port: 80
-};
-
-function reqOpt() {
-  var opts = {};
-  Object.keys(apiOpt).forEach(function (key) {
-    opts[key] = apiOpt[key];
-  });
-  opts.headers = auth;
-  return opts;
-};
-
-function apiPath(name) {
-  return "/API" + name.replace(/^[sg]et/, "").replace(/([A-Z])/g, "_$1").split(/_/).join("/") + "/";
+api.apiPath = function (name) {
+  var seg = name[0].toUpperCase().concat(name.substring(1)).replace(/([A-Z])/g, "_$1").split(/_/);
+  if (seg.length > 2) {
+    seg[1] = seg[1] + "s";
+  }
+  return "/API" + seg.join("/") + "/";
 }
 
-api.get = function (name, params, conf, done) {
-  var opts = reqOpt();
-  if (conf) { opts.headers = conf; }
-  opts["method"] = "GET";
-  opts["url"] += apiPath(name);
-  if (params) {
-    opts["url"] += "?" + Object.keys(params).map(function (key) {
-      return key + "=" + params[key]
-    }).join("&");
-  }
-  request(opts, function (err, res, body) {
-    if (err) {
-      return done(err, null);
-    }
-    return done(null, JSON.parse(body));
-  });
+api.get = function (name, done) {
+  sa.get(API_URL + api.apiPath(name))
+    .set(AUTH)
+    .end(function (err, res) {
+      done(err, res.body);
+    });
 };
 
 api.clear = function () {
-  auth = {};
+  AUTH = {};
 };
 
-api.set = function (name, value) {
-  if (name === "API") { auth.API = value; }
-  if (name === "Username") { auth.Username = value; }
-}
+api.key = function (key) {
+  if (arguments.length === 1) {
+    AUTH.API = key;
+  }
+  return AUTH.API;
+};
+
+api.username = function (username) {
+  if (arguments.length === 1) {
+    AUTH.Username = username
+  }
+  return AUTH.Username;
+};
 
 api.authenticate = function () {
-  if (arguments.length === 1) {
-    return api.get("getAuth", null, auth, arguments[0]);
+  var done = arguments[0];
+  if (arguments.length === 2) {
+    var conf = arguments[0];
+    done = arguments[1];
+    if (conf.API) api.key(conf.API);
+    if (conf.Username) api.username(conf.Username);
   }
-  return api.get("getAuth", null, arguments[0], arguments[1]);
+  return api.get("auth", done);
 };
 
 api.getTests = function (conf, done) {
