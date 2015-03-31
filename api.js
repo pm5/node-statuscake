@@ -6,6 +6,23 @@ var AUTH ={};
 
 var api = module.exports = {};
 
+Object.getPrototypeOf(sa.get()).use = function (middle) {
+  middle(sa);
+};
+
+function body() {
+  return function (agent) {
+    var e$ = agent.end;
+    agent.end = function (done) {
+      e$(function (err, res) {
+        done(err, res.body);
+      });
+    };
+  };
+}
+
+sa.use(body());
+
 api.get = function () {
   var path = arguments[0];
   var param = {};
@@ -16,9 +33,7 @@ api.get = function () {
   sa.get(API_URL + path)
     .set(AUTH)
     .query(param)
-    .end(function (err, res) {
-      done(err, res.body);
-    });
+    .end(done);
 };
 
 api.delete = function () {
@@ -31,9 +46,7 @@ api.delete = function () {
   sa.delete(API_URL + path)
     .set(AUTH)
     .query(param)
-    .end(function (err, res) {
-      done(err, res.body);
-    });
+    .end(done);
 };
 
 api.clear = function () {
