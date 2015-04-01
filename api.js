@@ -6,48 +6,11 @@ var AUTH ={};
 
 var api = module.exports = {};
 
-Object.getPrototypeOf(sa.get()).use = function (middle) {
-  middle(sa);
-};
-
-function body() {
-  return function (agent) {
-    var e$ = agent.end;
-    agent.end = function (done) {
-      e$(function (err, res) {
-        done(err, res.body);
-      });
-    };
+function bodyParser(done) {
+  return function (err, res) {
+    done(err, res.body);
   };
 }
-
-sa.use(body());
-
-api.get = function () {
-  var path = arguments[0];
-  var param = {};
-  var done = arguments[arguments.length - 1];
-  if (arguments.length === 3) {
-    param = arguments[1];
-  }
-  sa.get(API_URL + path)
-    .set(AUTH)
-    .query(param)
-    .end(done);
-};
-
-api.delete = function () {
-  var path = arguments[0];
-  var param = {};
-  var done = arguments[arguments.length - 1];
-  if (arguments.length === 3) {
-    param = arguments[1];
-  }
-  sa.delete(API_URL + path)
-    .set(AUTH)
-    .query(param)
-    .end(done);
-};
 
 api.clear = function () {
   AUTH = {};
@@ -57,14 +20,14 @@ api.key = function (key) {
   if (arguments.length === 1) {
     AUTH.API = key;
   }
-  return AUTH.API;
+  return this;
 };
 
 api.username = function (username) {
   if (arguments.length === 1) {
     AUTH.Username = username
   }
-  return AUTH.Username;
+  return this;
 };
 
 api.authenticate = function () {
@@ -75,17 +38,28 @@ api.authenticate = function () {
     if (conf.API) api.key(conf.API);
     if (conf.Username) api.username(conf.Username);
   }
-  return api.get("/Auth", done);
+  return sa(API_URL + "/Auth")
+    .set(AUTH)
+    .end(bodyParser(done));
 };
 
 api.tests = function (done) {
-  return api.get("/Tests", done);
+  return sa(API_URL + "/Tests")
+    .set(AUTH)
+    .end(bodyParser(done))
 };
 
 api.test = function (id, done) {
-  return api.get("/Tests/Details", { TestID: id }, done);
+  return sa(API_URL + "/Tests/Details")
+    .set(AUTH)
+    .query({ TestID: id })
+    .end(bodyParser(done));
 };
 
 api.testDelete = function (id, done) {
-  return api.delete("/Tests/Details", { TestID: id }, done);
+  sa.delete(API_URL + "/Tests/Details")
+    .set(AUTH)
+    .query({ TestID: id })
+    .end(bodyParser(done));
 };
+

@@ -21,15 +21,10 @@ describe("Tests API", function () {
     sc.clear();
   });
 
-  it.skip("can translate API name to endpoint path", function () {
-    expect(sc.apiPath("tests")).to.equal("/API/Tests/");
-    expect(sc.apiPath("testDetails")).to.equal("/API/Tests/Details/");
-    expect(sc.apiPath("testUpdate")).to.equal("/API/Tests/Update/");
-  });
-
   describe("by requests", function () {
     it("can get all tests", function (done) {
       sc.tests(function (err, data) {
+        expect(err).to.be.null;
         expect(data.length).to.be.a("number");
         expect(data[0].TestID).to.be.a("number");
         done(err);

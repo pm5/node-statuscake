@@ -3,7 +3,7 @@ var expect = require("chai").expect;
 var conf = require("./conf");
 var sc = require("..");
 
-describe.skip("Authentication", function () {
+describe("Authentication", function () {
   this.timeout(10000);
   afterEach(function () {
     sc.clear();
