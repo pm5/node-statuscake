@@ -3,20 +3,20 @@ var expect = require("chai").expect;
 var conf = require("./conf");
 var sc = require("..");
 
-var TestID = 375727;
+var TestID = 378573;
 var TestData = {
-  WebsiteName: "node-statuscake API test site",
+  WebsiteName: "node-statuscake testcase",
   WebsiteURL: "https://status.github.com/",
   CheckRate: 300,
   TestType: "HTTP",
-  TestTags: "test",
+  TestTags: "testcase",
 };
 
 describe("Tests API", function () {
   this.timeout(20000);
   beforeEach(function () {
-    sc.key(conf.API);
-    sc.username(conf.Username);
+    sc.key(conf.API)
+      .username(conf.Username);
   });
   afterEach(function () {
     sc.clear();
@@ -32,28 +32,28 @@ describe("Tests API", function () {
       });
     });
     it("can get test details", function (done) {
-      sc.test(TestID, function (err, test) {
+      sc.testsDetails(TestID, function (err, test) {
         expect(test.TestID).equal(TestID);
         expect(test.Method).equal("GET");
         done(err);
       });
     });
     it("can create a test", function (done) {
-      sc.test(TestData, function (err, output) {
+      sc.testsUpdate(TestData, function (err, output) {
         expect(err).to.be.null;
         expect(output).to.be.an("object");
         expect(output.Success).to.be.true;
         expect(output.InsertID).to.be.okay;
-        sc.testDelete(output.InsertID, done);
+        sc.testsDelete(output.InsertID, done);
       });
     });
     it("can delete a test", function (done) {
-      sc.test(TestData, function (err, output) {
+      sc.testsUpdate(TestData, function (err, output) {
         var id = output.InsertID;
-        sc.testDelete(id, function (err, output) {
+        sc.testsDelete(id, function (err, output) {
           expect(err).to.be.null;
           expect(output.Success).to.be.true;
-          sc.test(id, function (err, data) {
+          sc.testsDetails(id, function (err, data) {
             expect(data.ErrNo).to.equal(1);
             done();
           });
@@ -61,14 +61,14 @@ describe("Tests API", function () {
       });
     });
     it("can update a test", function (done) {
-      sc.test(TestData, function (err, output) {
+      sc.testsUpdate(TestData, function (err, output) {
         var id = output.InsertID;
-        sc.test(id, { CheckRate: 600 }, function (err, output) {
+        sc.testsUpdate({ TestID: id, CheckRate: 600 }, function (err, output) {
           expect(err).to.be.null;
           expect(output.Success).to.be.true;
-          sc.test(id, function (err, data) {
+          sc.testsDetails(id, function (err, data) {
             expect(data.CheckRate).to.equal(600);
-            sc.testDelete(id, done);
+            sc.testsDelete(id, done);
           });
         });
       });

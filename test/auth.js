@@ -10,22 +10,13 @@ describe("Authentication", function () {
   });
 
   it("can authenticate user", function (done) {
-    sc.username(conf.Username);
-    sc.key(conf.API);
-    sc.authenticate(function (err, data) {
-      if (err) return done(err);
-      expect(data.Details.Username).to.equal(conf.Username);
-      expect(data.ErrNo).to.be.undefined;
-      done();
-    });
-  });
-  it("can authenticate user with configuration object", function (done) {
-    sc.authenticate(conf, function (err, data) {
-      if (err) return done(err);
-      expect(data.Details.Username).equal(conf.Username);
-      expect(data.ErrNo).to.be.undefined;
-      done();
-    });
+    sc.username(conf.Username)
+      .key(conf.API)
+      .auth(function (err, data) {
+        expect(data.ErrNo).to.be.undefined;
+        expect(data.Success).to.be.true;
+        done();
+      });
   });
 });
 

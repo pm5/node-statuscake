@@ -12,6 +12,16 @@ function bodyParser(done) {
   };
 }
 
+function paramParser(param) {
+  if (typeof param === "object") return param;
+  if (typeof param === "number") return { TestID: param };
+  return {};
+}
+
+function methodName(path) {
+  return path[1].toLowerCase().concat(path.replace(/\//g, "").slice(1));
+}
+
 api.clear = function () {
   AUTH = {};
 };
@@ -30,58 +40,37 @@ api.username = function (username) {
   return this;
 };
 
-api.authenticate = function () {
-  var done = arguments[0];
-  if (arguments.length === 2) {
-    var conf = arguments[0];
-    done = arguments[1];
-    if (conf.API) api.key(conf.API);
-    if (conf.Username) api.username(conf.Username);
+var methods = {
+  "/Auth": "get",
+  "/Tests": "get",
+  "/Tests/Details": "get",
+  "/Tests/Update": "put",
+};
+
+Object.keys(methods).forEach(function (path) {
+  if (methods[path] === "get") {
+    api[methodName(path)] = function () {
+      var done = arguments[arguments.length - 1];
+      var agent = sa(API_URL + path).set(AUTH);
+      if (arguments.length > 1) {
+        agent.query(paramParser(arguments[0]));
+      }
+      return agent.end(bodyParser(done));
+    };
+  } else if (methods[path] === "put") {
+    api[methodName(path)] = function (data, done) {
+      return sa.put(API_URL + path)
+        .set(AUTH)
+        .type("form")
+        .send(paramParser(data))
+        .end(bodyParser(done));
+    }
   }
-  return sa(API_URL + "/Auth")
-    .set(AUTH)
-    .end(bodyParser(done));
-};
+});
 
-api.tests = function (done) {
-  return sa(API_URL + "/Tests")
-    .set(AUTH)
-    .end(bodyParser(done))
-};
-
-api.test = function () {
-  var done = arguments[arguments.length - 1];
-  var id, data;
-  if (arguments.length === 2 && typeof arguments[0] === "number") {
-    id = arguments[0];
-    return sa(API_URL + "/Tests/Details")
-      .set(AUTH)
-      .query({TestID: id})
-      .end(bodyParser(done));
-  } else if (arguments.length === 3) {
-    id = arguments[0];
-    data = arguments[1];
-    data.TestID = id;
-    return sa.put(API_URL + "/Tests/Update")
-      .set(AUTH)
-      .type("form")
-      .send(data)
-      .end(bodyParser(done));
-  } else if (typeof arguments[0] === "object") {
-    data = arguments[0];
-    return sa.put(API_URL + "/Tests/Update")
-      .set(AUTH)
-      .type("form")
-      .send(data)
-      .end(bodyParser(done));
-  }
-  done("Wrong arguments.", undefined);
-};
-
-api.testDelete = function (id, done) {
+api.testsDelete = function (id, done) {
   sa.del(API_URL + "/Tests/Details")
     .set(AUTH)
     .query({ TestID: id })
     .end(bodyParser(done));
 };
-
