@@ -6,16 +6,30 @@ var AUTH ={};
 
 var api = module.exports = {};
 
-function bodyParser(done) {
-  return function (err, res) {
-    done(err, res.body);
+function bodyParser() {
+  return function (req) {
+    req.end = function (done) {
+      Object.getPrototypeOf(req).end.call(req, function (err, res) {
+        done(err, res.body);
+      });
+    };
   };
 }
 
-function paramParser(param) {
-  if (typeof param === "object") return param;
-  if (typeof param === "number") return { TestID: param };
-  return {};
+function paramParser() {
+  function parse(param) {
+    if (typeof param === "object") return param;
+    if (typeof param === "number") return { TestID: param };
+    return {};
+  }
+  return function (req) {
+    req.query = function () {
+      return Object.getPrototypeOf(req).query.call(req, parse.apply(null, arguments));
+    };
+    req.send = function () {
+      return Object.getPrototypeOf(req).send.call(req, parse.apply(null, arguments));
+    };
+  };
 }
 
 function methodName(path) {
@@ -56,19 +70,24 @@ Object.keys(methods).forEach(function (path) {
   if (methods[path] === "get") {
     api[methodName(path)] = function () {
       var done = arguments[arguments.length - 1];
-      var agent = sa(API_URL + path).set(AUTH);
+      var agent = sa(API_URL + path)
+        .set(AUTH)
+        .use(bodyParser())
+        .use(paramParser());
       if (arguments.length > 1) {
-        agent.query(paramParser(arguments[0]));
+        agent.query(arguments[0]);
       }
-      return agent.end(bodyParser(done));
+      return agent.end(done);
     };
   } else if (methods[path] === "put") {
     api[methodName(path)] = function (data, done) {
       return sa.put(API_URL + path)
         .set(AUTH)
+        .use(bodyParser())
+        .use(paramParser())
         .type("form")
-        .send(paramParser(data))
-        .end(bodyParser(done));
+        .send(data)
+        .end(done);
     }
   }
 });
@@ -76,6 +95,7 @@ Object.keys(methods).forEach(function (path) {
 api.testsDelete = function (id, done) {
   sa.del(API_URL + "/Tests/Details")
     .set(AUTH)
+    .use(bodyParser())
     .query({ TestID: id })
-    .end(bodyParser(done));
+    .end(done);
 };
