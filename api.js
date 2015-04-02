@@ -45,6 +45,11 @@ var methods = {
   "/Tests": "get",
   "/Tests/Details": "get",
   "/Tests/Update": "put",
+  "/Tests/Periods": "get",
+  "/Tests/Checks": "get",
+  "/ContactGroups": "get",
+  "/ContactGroups/Update": "put",
+  "/Alerts": "get",
 };
 
 Object.keys(methods).forEach(function (path) {
