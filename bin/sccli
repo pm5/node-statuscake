@@ -3,11 +3,12 @@
 ':' //; exec "`command -v node || command -v nodejs`" "$0" "$@"
 
 var conf = require(process.env["HOME"] + "/.statuscake.json");
-var statuscake = require("statuscake");
-var app = statuscake.app(conf);
+var api = require("../index");
+api.username(conf.username)
+  .key(conf.key);
 
-if (process.argv[2] === "tests") {
-  app.tests(function (err, data) {
+if (process.argv[2] === "test") {
+  api.tests(function (err, data) {
     process.stdout.write(JSON.stringify(data));
   });
 }

@@ -1,17 +1,11 @@
 {
   "name": "statuscake",
   "version": "0.1.0",
-  "description": "StatusCake API client library and CLI.",
+  "description": "StatusCake API client library.",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
     "dev": "npm install && npm run test -- -wbdGS --reporter min"
-  },
-  "directories": {
-    "bin": "./bin"
-  },
-  "bin": {
-    "sccli": "./bin/sccli"
   },
   "repository": {
     "type": "git",
