@@ -9,10 +9,11 @@ var TestData = {
   WebsiteURL: "https://status.github.com/",
   CheckRate: 300,
   TestType: "HTTP",
+  TestTags: "test",
 };
 
 describe("Tests API", function () {
-  this.timeout(10000);
+  this.timeout(20000);
   beforeEach(function () {
     sc.key(conf.API);
     sc.username(conf.Username);
@@ -21,7 +22,7 @@ describe("Tests API", function () {
     sc.clear();
   });
 
-  describe("by requests", function () {
+  describe("with callbacks", function () {
     it("can get all tests", function (done) {
       sc.tests(function (err, data) {
         expect(err).to.be.null;
@@ -37,16 +38,38 @@ describe("Tests API", function () {
         done(err);
       });
     });
-    it("can upsert and delete a test", function () {
+    it("can create a test", function (done) {
       sc.test(TestData, function (err, output) {
         expect(err).to.be.null;
+        expect(output).to.be.an("object");
         expect(output.Success).to.be.true;
         expect(output.InsertID).to.be.okay;
+        sc.testDelete(output.InsertID, done);
+      });
+    });
+    it("can delete a test", function (done) {
+      sc.test(TestData, function (err, output) {
         var id = output.InsertID;
         sc.testDelete(id, function (err, output) {
+          expect(err).to.be.null;
           expect(output.Success).to.be.true;
-          expect(output.TestID).equal(id);
-          done(err);
+          sc.test(id, function (err, data) {
+            expect(data.ErrNo).to.equal(1);
+            done();
+          });
+        });
+      });
+    });
+    it("can update a test", function (done) {
+      sc.test(TestData, function (err, output) {
+        var id = output.InsertID;
+        sc.test(id, { CheckRate: 600 }, function (err, output) {
+          expect(err).to.be.null;
+          expect(output.Success).to.be.true;
+          sc.test(id, function (err, data) {
+            expect(data.CheckRate).to.equal(600);
+            sc.testDelete(id, done);
+          });
         });
       });
     });
