@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "dev": "npm install && npm run test -- -w --reporter min"
+    "dev": "npm install && npm run test -- -wbdGS --reporter min"
   },
   "directories": {
     "bin": "./bin"
