@@ -68,6 +68,9 @@ var methods = {
   "/ContactGroups": "get",
   "/ContactGroups/Update": "put",
   "/Alerts": "get",
+  "/Locations/json": "get",
+  "/Locations/xml": "get",
+  "/Locations/txt": "get",
 };
 
 Object.keys(methods).forEach(function (path) {
