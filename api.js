@@ -32,8 +32,12 @@ function paramParser() {
   };
 }
 
-function methodName(path) {
-  return path[1].toLowerCase().concat(path.replace(/\//g, "").slice(1));
+api.pathToMethodName = function (path) {
+  return path.slice(1).split("/").map(function (s, i) {
+    if (i === 0) return s.toLowerCase()
+    else if (s === s.toLowerCase()) return s.toUpperCase()
+    else return s[0].toUpperCase().concat(s.slice(1).toLowerCase());
+  }).join("");
 }
 
 api.clear = function () {
@@ -68,7 +72,7 @@ var methods = {
 
 Object.keys(methods).forEach(function (path) {
   if (methods[path] === "get") {
-    api[methodName(path)] = function () {
+    api[api.pathToMethodName(path)] = function () {
       var done = arguments[arguments.length - 1];
       var agent = sa(API_URL + path)
         .set(AUTH)
@@ -80,7 +84,7 @@ Object.keys(methods).forEach(function (path) {
       return agent.end(done);
     };
   } else if (methods[path] === "put") {
-    api[methodName(path)] = function (data, done) {
+    api[api.pathToMethodName(path)] = function (data, done) {
       return sa.put(API_URL + path)
         .set(AUTH)
         .use(bodyParser())
