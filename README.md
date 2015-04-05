@@ -40,3 +40,8 @@ List of methods:
 All callbacks take `(err, data)` as parameters.
 
 See [StatusCake API Documentation][apidoc] for their usages.
+
+License
+-------
+
+[MIT License](http://pm5.mit-license.org/)
