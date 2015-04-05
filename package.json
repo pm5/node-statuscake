@@ -1,6 +1,6 @@
 {
   "name": "statuscake",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "StatusCake API client library.",
   "main": "index.js",
   "scripts": {
