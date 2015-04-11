@@ -34,7 +34,7 @@ function paramParser() {
 
 api.pathToMethodName = function (path) {
   return path.slice(1).split("/").map(function (s, i) {
-    if (i === 0) return s.toLowerCase()
+    if (i === 0) return s[0].toLowerCase().concat(s.substr(1))
     else if (s === s.toLowerCase()) return s.toUpperCase()
     else return s[0].toUpperCase().concat(s.slice(1).toLowerCase());
   }).join("");

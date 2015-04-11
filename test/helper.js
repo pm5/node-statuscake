@@ -7,5 +7,6 @@ describe("API Helper", function () {
     expect(sc.pathToMethodName("/Tests/Periods")).to.equal("testsPeriods");
     expect(sc.pathToMethodName("/Alerts")).to.equal("alerts");
     expect(sc.pathToMethodName("/Locations/json")).to.equal("locationsJSON");
+    expect(sc.pathToMethodName("/ContactGroups")).to.equal("contactGroups");
   });
 });
